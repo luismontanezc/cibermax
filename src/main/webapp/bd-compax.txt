@@ -1,0 +1,154 @@
+-- borra la bd si existe
+DROP DATABASE IF EXISTS compomax;
+-- creamos la bd
+CREATE DATABASE compomax;
+-- activamos la bd
+USE compomax;
+
+create table tb_tipos(
+idtipo int not null primary key,
+descripcion varchar(15)
+);
+
+create table tb_estados(
+idestado    int not null primary key,
+descripcion varchar(15)
+);
+
+CREATE TABLE tb_usuarios(
+codigo  int auto_increment,
+nombre varchar(15),
+apellido varchar(25),
+usuario  char(45) NOT NULL,
+clave    char(5),
+fnacim  date  null,
+tipo    int DEFAULT 2,
+primary key (codigo),
+foreign key (tipo) references tb_tipos(idtipo)
+);
+        
+create table tb_categorias(
+idcategoria	int not null primary key,
+descripcion varchar(45)
+);
+
+create table tb_productos(
+idprod char(5) not null,
+descripcion varchar(100),
+stock int,
+precio decimal(8,2),
+idcategoria int,
+estado int,
+primary key (idprod), 
+foreign key (idcategoria) references tb_categorias(idcategoria)
+);
+
+create table tb_cab_boleta(
+num_bol      char(5) not null,
+fch_bol    date,
+cod_cliente  int not null,
+primary key (num_bol),
+foreign key (cod_cliente) references tb_usuarios(codigo)
+);
+
+create table tb_det_boleta(
+num_bol     char(5) not null,
+idprod      char(5) not null,
+cantidad    int,
+preciovta   decimal(8,2),
+primary key (num_bol,idprod),
+foreign key (num_bol) references tb_cab_boleta(num_bol),
+foreign key (idprod) references tb_productos(idprod)
+);
+
+-- inserts
+insert into tb_tipos values (1, 'administrativo');
+insert into tb_tipos values (2, 'cliente');
+
+insert into tb_estados values (1, 'Con stock');
+insert into tb_estados values (2, 'Sin Stock');
+
+insert into tb_usuarios values (null,'Jose', 'Alvarado','U001@gmail.com', '10001', curdate(),1);
+insert into tb_usuarios values (null,'Pablo', 'Escobar','U002@gmail.com', '10002', curdate(),2);
+insert into tb_usuarios values (null,'Andres', 'Hurtado','U003@gmail.com', '10003', curdate(),2);
+insert into tb_usuarios values (null,'Francis', 'Lopez','U004@hotmail.com', '10004', curdate(),2);
+insert into tb_usuarios values (null,'administrador', 'sistema','admin@compomax.com', 'admin', curdate(),1);
+
+
+insert into tb_categorias values (1, 'Procesadores');
+insert into tb_categorias values (2, 'Tarjeta de video');
+insert into tb_categorias values (3, 'Mainboard');
+insert into tb_categorias values (4, 'Memorias Ram');
+insert into tb_categorias values (5, 'Almacenamiento');
+insert into tb_categorias values (6, 'Fuentes de poder');
+insert into tb_categorias values (7, 'Cases');
+insert into tb_categorias values (8, 'Monitores');
+insert into tb_categorias values (9, 'Perifericos PC');
+
+/* Tb producto, id prod, desc, stock, precio, idcategoria, estado*/
+insert into tb_productos values ('P0001','MSI, GEFORCE RTX 3050 8GB GDRR6 VENTUS 2X',10,920.0,2,1);
+insert into tb_productos values ('P0002','AMD, RYZEN 5 5500 6N/12H 3.9Ghz',100,342.5,1,1);
+insert into tb_productos values ('P0003','MSI, AMD AM4 B550 PRO VDH WIFI',5,388.0,3,1);
+insert into tb_productos values ('P0004','DDR4 8GB 3200MHZ RGB XPG D35',32,89.5,4,1);
+insert into tb_productos values ('P0005','MSI SPATIUM M450 M.2 1TB GEN 4X4 NVME 3600MB/s',4,225.0,5,1);
+insert into tb_productos values ('P0006','XPG, 650W 80 PLUS BRONZE PYLON ATX',23,230.5,6,1);
+insert into tb_productos values ('P0007','DEEPCOOL, CC360 ARGB WHITE/ MID TOWER SIN FUENTE',84,214.9,7,1);
+insert into tb_productos values ('P0008','MSI, G244F 24P 170HZ 1MS FAST IPS FREESYNC 110%sRGB',11,550.5,8,1);
+insert into tb_productos values ('P0009','KIT GAMING ANTRYX GC-3100 BLACK, TECLADO SWITCH BLUE Y MOUSE',100,149.9,9,1);
+insert into tb_productos values ('P0010','VGA ASUS RTX 4060 DUAL OC 8GB GDDR',200,1312.0,2,1);
+insert into tb_productos values ('P0011','AMD, RYZEN 5 5600 6N/12H 3.9Ghz PCLE 4.0 BULK',6,469.9,1,1);
+insert into tb_productos values ('P0012','MOUSE MSI FORGE GM300 BLACK RGB DPI 7,200 CONECTIVIDAD WIRED USB',20,40.5,9,1);
+insert into tb_productos values ('P0013','MSI MAG A650BN 650W 80 PLUS BRONZE',17,249.9,6,1);
+insert into tb_productos values ('P0014','XIAOMI G24i 24" FHD/180HZ/1MS/AMD RADEON FREESYNC',35,399.9,8,1);
+insert into tb_productos values ('P0015','TEAMGROUP T-FORCE DELTA RGB, BLACK, 16GB DDR5 5600 MHZ',51,214.9,4,1);
+insert into tb_productos values ('P0016','INTEL CORE I5-12400F 2.50GHZ/4.40GHZ 18MB LGA1700',8,499.9,1,1);
+
+
+-- consultas
+SELECT * FROM tb_usuarios;
+SELECT * FROM tb_productos;
+select * from tb_categorias;
+select * from tb_tipos;
+select * from tb_estados;
+select * from tb_cab_boleta;
+select * from tb_det_boleta;
+
+ALTER TABLE tb_usuarios MODIFY clave VARCHAR(255) NOT NULL;
+SELECT * FROM tb_usuarios WHERE clave IS NULL;
+SET SQL_SAFE_UPDATES = 0;
+
+-- ejemplo de procedimientos almancenados de consulta
+DELIMiTER $$
+create procedure usp_validaAcceso (usr char(45), pas char(5))
+begin
+select * from tb_usuarios where usuario = usr and clave = pas;
+end$$
+DELIMiTER ;
+
+call usp_validaAcceso('U001@gmail.com','10001');
+
+-- eliminacion fisica
+delete from tb_productos where idprod = 'P0031';
+-- eliminacion logica 
+update tb_productos set estado = 2 where idprod = 'P0031';
+-- actualizar un producto
+update tb_productos set descripcion = '', stock = 0, precio = 0, 
+	idcategoria = 5 where idprod = 'P0031';
+select * from tb_productos;
+-- procedimientos almacenados 
+create procedure usp_actProducto (xidprod char(5),
+xdescripcion varchar(45), xstock int, xprecio decimal(8,2),
+xidcategoria int, xestado int)
+	update tb_productos set descripcion = xdescripcion, 
+    stock = xstock, precio = xprecio, 
+	idcategoria = xidcategoria where idprod = xidprod;
+-- prueba del procedimiento 
+select * from tb_productos;
+call usp_actProducto('P0020', 'Producto 20',20,20.99,5,1);
+
+select * from tb_productos where estado = 1;
+SELECT * FROM tb_productos WHERE estado = 1 ORDER BY idcategoria;
+SELECT * FROM tb_productos WHERE estado = 1;
+SELECT estado FROM tb_usuarios WHERE id = 1;
+
+select * FROM tb_productos WHERE estado = 1 ORDER BY idcategoria

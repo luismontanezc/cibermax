@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: t3el_tema08
+Bundle-SymbolicName: t3el_tema08
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-21
+Automatic-Module-Name: t3el.tema08
+Export-Package: com.ciberfarma.conexion,
+ com.ciberfarma.controller,
+ com.ciberfarma.listener,
+ com.ciberfarma.mantenimientos,
+ com.ciberfarma.model
