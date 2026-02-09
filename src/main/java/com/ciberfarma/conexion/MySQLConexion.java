@@ -10,7 +10,7 @@ public class MySQLConexion {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			// ?useSSL=false&useTimezone=true&serverTimezone=UTC
-			String url = "jdbc:mysql://localhost:3306/compomax";
+			String url = "jdbc:mysql://localhost:3306/cibermax";
 			String usr = "root";
 			String psw = "mysql";
 			con = DriverManager.getConnection(url, usr, psw);
